@@ -91,10 +91,11 @@ void getGameList() {
 	while((ptr=readdir(dir))!=NULL) {
 		//跳过'.'和'..'两个目录GamesList[i]
 		if(ptr->d_name[0] == '.')
-					continue;
+							continue;
 		if(ptr->d_type==DT_REG) {
 			string tmpNode;
-			tmpstr = ptr->d_name;tmpNode = tmpstr.substr(0,tmpstr.rfind("."));
+			tmpstr = ptr->d_name;
+			tmpNode = tmpstr.substr(0,tmpstr.rfind("."));
 			if((tmpstr.find(".gba")) != string::npos) {
 				GamesList.push_back(tmpNode);
 			}
@@ -251,24 +252,18 @@ int main( int argc, char* args[] ) {
 				}
 				if( event.type == SDL_KEYDOWN ) {
 					if(event.key.keysym.sym==SDLK_UP) {
-						if(Page == 0 && Select <= 0){
-						
-						}
-						else if ( Select > 0 )
-							Select -= 1;
-						else {
+						if(Page == 0 && Select <= 0) {
+						} else if ( Select > 0 )
+													Select -= 1; else {
 							Select = 7;
 							if ( Page > 0 ) {
 								Page -= 1;
 							}
 						}
 					} else if(event.key.keysym.sym==SDLK_DOWN) {
-						if(Page == PageTotal && Select > SelectEndMod-2){
-						
-						}				
-						else if ( Select < 8 - 1 )
-							Select += 1;
-						else {
+						if(Page == PageTotal && Select > SelectEndMod-2) {
+						} else if ( Select < 8 - 1 )
+													Select += 1; else {
 							Select = 0;
 							if ( Page < PageTotal ) {
 								Page += 1;
@@ -276,68 +271,61 @@ int main( int argc, char* args[] ) {
 						}
 					} else if(event.key.keysym.sym==SDLK_RETURN) {
 						pid_t pid = fork();
-        					string cmd;
+						string cmd;
 						cmd = "./roms/"+GamesList[Page * 8 + Select]+".gba";
-						if(pid == 0){
+						if(pid == 0) {
 							cout<<cmd<<endl;
 							//execlp("gpsp","gpsp",cmd.c_str(),NULL);
-						}else{
+						} else {
 							pause();
 						}
 					}
-
 					for ( int i = 0; i < GamesList.size(); i++ ) {
-							if ( Page == PageTotal ) {
-								if ( i < SelectEndMod ) {
-									if (Gamestitle[i]) {
-										SDL_FreeSurface(Gamestitle[i]);
-									}
-									Gamestitle[i] = TTF_RenderUTF8_Blended( font, GamesList[Page * 8 + i].c_str(), font_color );
-									for ( int j = i + 1; j < 8; j++ ) {
-										if (Gamestitle[j]) {
-											SDL_FreeSurface(Gamestitle[j]);
-										}
-										Gamestitle[j] = TTF_RenderUTF8_Blended( font, "", font_color );
-									}
-								}
-							} else if ( i < 8 ) {
+						if ( Page == PageTotal ) {
+							if ( i < SelectEndMod ) {
 								if (Gamestitle[i]) {
 									SDL_FreeSurface(Gamestitle[i]);
 								}
 								Gamestitle[i] = TTF_RenderUTF8_Blended( font, GamesList[Page * 8 + i].c_str(), font_color );
-							} else {
-								break;
+								for ( int j = i + 1; j < 8; j++ ) {
+									if (Gamestitle[j]) {
+										SDL_FreeSurface(Gamestitle[j]);
+									}
+									Gamestitle[j] = TTF_RenderUTF8_Blended( font, "", font_color );
+								}
 							}
+						} else if ( i < 8 ) {
+							if (Gamestitle[i]) {
+								SDL_FreeSurface(Gamestitle[i]);
+							}
+							Gamestitle[i] = TTF_RenderUTF8_Blended( font, GamesList[Page * 8 + i].c_str(), font_color );
+						} else {
+							break;
+						}
 					}
 				}
 				//draw background
 				apply_surface( 0, 0, background, screen );
-				for ( int i = 0; i < 8; i++ )
-				{
-					if ( Gamestitle[i] != NULL )
-					{
+				for ( int i = 0; i < 8; i++ ) {
+					if ( Gamestitle[i] != NULL ) {
 						apply_surface( GamestitleRectdst[i].x,GamestitleRectdst[i].y,Gamestitle[i], screen );
 					}
 				}
-
 				if (TotalTextSurface) {
 					SDL_FreeSurface(TotalTextSurface);
 				}
 				TotalText = to_string(Select+1+Page*8)+"/"+to_string(GamesList.size());
 				TotalTextSurface = TTF_RenderUTF8_Blended( font, TotalText.c_str(), font_color );
 				apply_surface( TotalTextRectdst.x,TotalTextRectdst.y,TotalTextSurface, screen );
-
 				apply_surface( 14, 24+Select*14, message, screen );
-				
-			}
-
-		}
-			//Update the screen
-			if( SDL_Flip( screen ) == -1 ) {
-				return 1;
 			}
 		}
-		//Free surfaces and font then quit SDL_ttf and SDL
+		//Update the screen
+		if( SDL_Flip( screen ) == -1 ) {
+			return 1;
+		}
+	}
+	//Free surfaces and font then quit SDL_ttf and SDL
 	clean_up();
 	return 0;
 }
